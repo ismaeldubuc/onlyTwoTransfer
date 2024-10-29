@@ -1,0 +1,21 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    command: ["./wait-for-it.sh", "mysql:3306", "--", "npm", "start"]
+    volumes:
+      - .:/app  # Pour s'assurer que le script wait-for-it.sh soit inclus
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: file_server
