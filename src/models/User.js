@@ -1,24 +1,25 @@
 // src/models/User.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+const sequelize = require('../config/db'); // Chemin corrigé vers src/config/db
 
 const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   username: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  email: {
-    type: DataTypes.STRING,
     unique: true,
-    allowNull: false,
   },
   password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  quota: {
+  usedQuota: {
     type: DataTypes.INTEGER,
-    defaultValue: 2048, // En MB
+    defaultValue: 0, // Espace utilisé en Mo
   },
 });
 

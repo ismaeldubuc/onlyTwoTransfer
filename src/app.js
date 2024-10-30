@@ -1,6 +1,7 @@
 // src/app.js
 const express = require('express');
 const bodyParser = require('body-parser');
+const sequelize = require('./config/db'); // Chemin correct vers src/config/db
 const cors = require('cors');
 
 const app = express();
