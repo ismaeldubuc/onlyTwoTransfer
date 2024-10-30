@@ -1,9 +1,9 @@
-// index.js
-const app = require('./src/app');
+import app from './src/app.js';
+import sequelize from './src/config/db.js';
+import User from './src/models/User.js';
+import File from './src/models/File.js';
+
 const PORT = process.env.PORT || 3000;
-const User = require('./src/models/User');
-const File = require('./src/models/File');
-const sequelize = require('./src/config/db');
 
 sequelize.sync({ force: true }) // En développement, force:true réinitialise les tables
   .then(() => {
@@ -12,7 +12,6 @@ sequelize.sync({ force: true }) // En développement, force:true réinitialise l
   .catch((err) => {
     console.error('Erreur de synchronisation :', err);
   });
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

@@ -1,5 +1,5 @@
 # Utiliser une image Node.js officielle
-FROM node:18
+FROM node:22
 
 # Définir le dossier de travail
 WORKDIR /app
@@ -10,6 +10,9 @@ COPY package*.json ./
 # Installer les dépendances
 RUN npm install
 
+# Recompiler bcrypt pour s'assurer qu'il fonctionne sur l'environnement Docker
+RUN npm rebuild bcrypt --build-from-source
+
 # Copier tout le reste des fichiers du projet
 COPY . .
 
@@ -17,4 +20,4 @@ COPY . .
 EXPOSE 3000
 
 # Commande pour démarrer l'application
-CMD ["node", "src/app.js"]
+CMD ["node", "index.js"]

@@ -1,7 +1,6 @@
-// src/models/File.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); // Chemin corrigé vers src/config/db
-const User = require('./User');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
+import User from './User.js';
 
 const File = sequelize.define('File', {
   id: {
@@ -27,8 +26,7 @@ const File = sequelize.define('File', {
   },
 });
 
-// Association entre les tables User et File
 File.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
 User.hasMany(File, { foreignKey: 'userId' });
 
-module.exports = File;
+export default File;

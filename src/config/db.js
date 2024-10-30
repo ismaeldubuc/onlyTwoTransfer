@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize');
+import { Sequelize } from 'sequelize';
 
 const sequelize = new Sequelize(
   process.env.MYSQL_DATABASE,
@@ -14,4 +14,4 @@ sequelize.authenticate()
   .then(() => console.log('Connexion à MySQL réussie'))
   .catch(error => console.error('Erreur de connexion à MySQL :', error));
 
-module.exports = sequelize;
+export default sequelize;
