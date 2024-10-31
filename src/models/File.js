@@ -24,6 +24,11 @@ const File = sequelize.define('File', {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  shareToken: {
+    type: DataTypes.STRING, // Champ pour le jeton de partage
+    allowNull: true,
+    unique: true,
+  },
 });
 
 File.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });

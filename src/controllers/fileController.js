@@ -1,5 +1,6 @@
 import File from '../models/File.js';
 import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
 
 const upload = multer();
 
@@ -26,3 +27,61 @@ export const uploadFile = async (req, res) => {
     }
   });
 };
+
+export const generateShareLink = async (req, res) => {
+    const { fileId } = req.params;
+    const { expirationInHours } = req.body; // Durée en heures pendant laquelle le lien est valide
+  
+    try {
+      const file = await File.findByPk(fileId);
+      if (!file) {
+        return res.status(404).json({ message: 'Fichier introuvable' });
+      }
+  
+      // Vérifier que l'utilisateur est propriétaire du fichier
+      if (file.userId !== req.user.userId) {
+        return res.status(403).json({ message: 'Accès non autorisé' });
+      }
+  
+      // Générer un jeton de partage unique
+      const shareToken = uuidv4();
+      const expirationDate = new Date();
+      expirationDate.setHours(expirationDate.getHours() + expirationInHours);
+  
+      // Mettre à jour le fichier avec le jeton et la date d'expiration
+      file.shareToken = shareToken;
+      file.expirationDate = expirationDate;
+      await file.save();
+  
+      const shareLink = `${req.protocol}://${req.get('host')}/api/files/share/${shareToken}`;
+      res.status(200).json({ message: 'Lien de partage généré avec succès', shareLink });
+    } catch (error) {
+      console.error('Erreur lors de la génération du lien de partage :', error);
+      res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    }
+};
+
+export const accessSharedFile = async (req, res) => {
+    const { shareToken } = req.params;
+
+    try {
+        const file = await File.findOne({ where: { shareToken } });
+        if (!file) {
+        return res.status(404).json({ message: 'Lien de partage invalide ou fichier introuvable' });
+        }
+
+        // Vérifier si le lien a expiré
+        if (new Date() > file.expirationDate) {
+        return res.status(410).json({ message: 'Le lien de partage a expiré' });
+        }
+
+        // Envoyer le fichier en réponse
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+        res.send(file.data);
+    } catch (error) {
+        console.error('Erreur lors de l\'accès au fichier partagé :', error);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    }
+};
+  

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Site d'upload et téléchargement de fichier avec un quota de 2giga par user",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
