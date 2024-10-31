@@ -84,4 +84,47 @@ export const accessSharedFile = async (req, res) => {
         res.status(500).json({ message: 'Erreur serveur', error: error.message });
     }
 };
+
+export const deleteFile = async (req, res) => {
+    const { fileId } = req.params;
+  
+    try {
+      const file = await File.findByPk(fileId);
+      if (!file) {
+        return res.status(404).json({ message: 'Fichier introuvable' });
+      }
+  
+      // Vérifier que l'utilisateur est propriétaire du fichier
+      if (file.userId !== req.user.userId) {
+        return res.status(403).json({ message: 'Accès non autorisé' });
+      }
+  
+      await file.destroy();
+      res.status(200).json({ message: 'Fichier supprimé avec succès' });
+    } catch (error) {
+      console.error('Erreur lors de la suppression du fichier :', error);
+      res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    }
+};
+  
+export const getUserFiles = async (req, res) => {
+    try {
+        const files = await File.findAll({
+        where: { userId: req.user.userId },
+        });
+
+        const filesWithLinks = files.map(file => ({
+        id: file.id,
+        filename: file.filename,
+        size: file.size,
+        uploadedAt: file.createdAt,
+        shareLink: file.shareToken ? `${req.protocol}://${req.get('host')}/api/files/share/${file.shareToken}` : null,
+        }));
+
+        res.status(200).json({ files: filesWithLinks });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des fichiers :', error);
+        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    }
+};
   
