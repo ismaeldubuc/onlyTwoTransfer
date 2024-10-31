@@ -41,10 +41,3 @@ OnlyTwoTransfer est une plateforme de partage de fichiers permettant aux utilisa
    docker-compose up --build
    ```
 3. Le site sera ensuite disponible sur le localhost : [http://localhost:8080/](http://localhost:8080/)
-
-## Problème Connu : Lien de Téléchargement
-
-Dans la Sidebar du frontend, chaque fichier devrait avoir un lien de téléchargement associé. Toutefois, malgré les efforts pour récupérer et afficher ces liens dynamiquement, le champ `shareLink` ne s'affiche pas correctement. Lorsque l'utilisateur ouvre la Sidebar, une requête est envoyée pour récupérer tous les fichiers de l'utilisateur ainsi que leurs liens de partage. Les autres attributs, comme le nom et la taille du fichier, sont affichés correctement, mais le `shareLink` reste souvent indisponible.
-
-### Note Importante
-Lors des tests via Postman, toutes les routes fonctionnent parfaitement, y compris la génération des liens de partage. Le backend renvoie bien les liens de partage, et ceux-ci peuvent être utilisés pour télécharger les fichiers. Ce problème semble être lié à la logique du frontend qui ne gère pas correctement la récupération des liens ou au timing des `useEffect` dans React. Il peut nécessiter des ajustements pour garantir la synchronisation correcte entre les appels API.
