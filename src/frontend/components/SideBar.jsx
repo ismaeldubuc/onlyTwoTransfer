@@ -12,7 +12,7 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
-    const fetchFiles = async () => {
+    const fetchFilesAndGenerateLinks = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -20,28 +20,61 @@ const Sidebar = () => {
           return;
         }
 
-        // Récupérer la liste des fichiers de l'utilisateur, incluant les liens de partage
+        // Étape 1 : Récupérer la liste des fichiers de l'utilisateur
         const response = await axios.get("http://localhost:3000/api/files/user", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        // Mettre à jour l'état avec les fichiers incluant les liens de partage
-        setFiles(response.data.files);
+        const fetchedFiles = response.data.files;
+
+        // Étape 2 : Générer les liens de partage si nécessaire
+        await Promise.all(
+          fetchedFiles.map(async (file) => {
+            if (!file.shareLink) {
+              try {
+                await axios.post(
+                  `http://localhost:3000/api/files/share/${file.id}`,
+                  {
+                    expirationInHours: 24, // Ajouter la durée d'expiration dans le corps de la requête
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+              } catch (error) {
+                console.error(
+                  `Erreur lors de la génération du lien de partage pour le fichier ${file.id}`,
+                  error
+                );
+              }
+            }
+          })
+        );
+
+        // Étape 3 : Récupérer à nouveau les fichiers avec les liens mis à jour
+        const updatedResponse = await axios.get("http://localhost:3000/api/files/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setFiles(updatedResponse.data.files);
       } catch (error) {
         console.error("Erreur lors de la récupération des fichiers", error);
       }
     };
 
     if (isOpen) {
-      fetchFiles(); // Récupérer les fichiers et leurs liens lorsque la sidebar s'ouvre
+      fetchFilesAndGenerateLinks(); // Récupérer les fichiers et générer les liens lorsque la sidebar s'ouvre
     }
   }, [isOpen]);
 
   return (
     <div className="flex">
-      {/* Logo ou icône pour déclencher l'ouverture/fermeture de la sidebar */}
       <button onClick={toggleSidebar} className="p-2">
         <img src={LogoWebsite} alt="Logo du site" className="size-16" />
       </button>
@@ -71,16 +104,22 @@ const Sidebar = () => {
                     </p>
                     <p className="text-sm text-gray-600">
                       Date de création :{" "}
-                      {file.uploadedAt ? new Date(file.uploadedAt).toLocaleString() : "Date inconnue"}
+                      {file.uploadedAt}
                     </p>
+                    {file.shareLink ? (
                       <a
-                        href={file.shareLink}
+                        href={`http://localhost:3000/api/files/share/${file.shareLink}`}
                         className="text-blue-600 text-sm border-blue-600"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Lien de téléchargement
                       </a>
+                    ) : (
+                      <p className="text-sm text-gray-400">
+                        Lien de partage indisponible
+                      </p>
+                    )}
                   </div>
                 </li>
               ))

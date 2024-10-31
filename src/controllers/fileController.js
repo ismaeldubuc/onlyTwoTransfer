@@ -61,29 +61,27 @@ export const generateShareLink = async (req, res) => {
     }
 };
 
+import mime from 'mime-types'; // Add this package to your dependencies if not already installed
+
 export const accessSharedFile = async (req, res) => {
+  try {
     const { shareToken } = req.params;
 
-    try {
-        const file = await File.findOne({ where: { shareToken } });
-        if (!file) {
-        return res.status(404).json({ message: 'Lien de partage invalide ou fichier introuvable' });
-        }
+    const file = await File.findOne({ where: { shareToken } });
 
-        // Vérifier si le lien a expiré
-        if (new Date() > file.expirationDate) {
-        return res.status(410).json({ message: 'Le lien de partage a expiré' });
-        }
-
-        // Envoyer le fichier en réponse
-        res.setHeader('Content-Type', 'application/octet-stream');
-        res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
-        res.send(file.data);
-    } catch (error) {
-        console.error('Erreur lors de l\'accès au fichier partagé :', error);
-        res.status(500).json({ message: 'Erreur serveur', error: error.message });
+    if (!file) {
+      return res.status(404).json({ message: 'Fichier non trouvé.' });
     }
+
+    // Suppression des headers potentiellement problématiques
+    return res.send(file.data); // Envoyer les données binaires du fichier
+  } catch (error) {
+    console.error('Erreur lors de l\'accès au fichier partagé :', error);
+    return res.status(500).json({ message: 'Erreur lors de l\'accès au fichier partagé.' });
+  }
 };
+
+
 
 export const deleteFile = async (req, res) => {
     const { fileId } = req.params;
@@ -118,7 +116,7 @@ export const getUserFiles = async (req, res) => {
         filename: file.filename,
         size: file.size,
         uploadedAt: file.createdAt,
-        shareLink: file.shareToken ? `${req.protocol}://${req.get('host')}/api/files/share/${file.shareToken}` : null,
+        shareLink: file.shareToken,
         }));
 
         res.status(200).json({ files: filesWithLinks });
@@ -127,4 +125,3 @@ export const getUserFiles = async (req, res) => {
         res.status(500).json({ message: 'Erreur serveur', error: error.message });
     }
 };
-  

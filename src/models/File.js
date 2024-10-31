@@ -29,6 +29,10 @@ const File = sequelize.define('File', {
     allowNull: true,
     unique: true,
   },
+  shareLink: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }  
 });
 
 File.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
