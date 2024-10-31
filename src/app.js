@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import sequelize from './config/db.js';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
+import fileRoutes from './routes/fileRoutes.js';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes (ajoutez vos routes ici)
+app.use('/api/files', fileRoutes);
 app.use(express.json()); // Pour analyser le corps des requêtes en JSON
 app.use('/api', userRoutes); // Monter les routes utilisateurs sous le préfixe /api
 

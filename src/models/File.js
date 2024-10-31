@@ -12,16 +12,16 @@ const File = sequelize.define('File', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  path: {
-    type: DataTypes.STRING,
+  data: {
+    type: DataTypes.BLOB('long'), // Type BLOB pour les données binaires des fichiers
     allowNull: false,
   },
   size: {
-    type: DataTypes.INTEGER, // Taille en Mo
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   expirationDate: {
-    type: DataTypes.DATE, // Date d'expiration du lien
+    type: DataTypes.DATE,
     allowNull: true,
   },
 });
