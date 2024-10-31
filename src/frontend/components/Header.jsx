@@ -9,7 +9,6 @@ export const Header = () => {
         <h1 className="text-4xl">Only Two Transfer</h1>
       </div>
       <div className="flex items-center gap-10">
-        <h1 className="text-xl">John Doe</h1>
         <FaCircleUser className="text-4xl" />
       </div>
     </div>

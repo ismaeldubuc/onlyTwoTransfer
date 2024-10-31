@@ -1,0 +1,31 @@
+# Dockerfile pour le frontend
+
+# Utiliser une image Node.js officielle pour le build
+FROM node:22 as build
+
+# Définir le dossier de travail
+WORKDIR /frontend
+
+# Copier les fichiers package.json et package-lock.json
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier tout le reste des fichiers du projet (y compris index.html)
+COPY . .
+
+# Assurez-vous que le fichier index.html est bien présent
+RUN ls -la /frontend
+
+# Build de l’application
+RUN npm run build
+
+# Utiliser une image Nginx pour le déploiement
+FROM nginx:alpine
+
+# Copier les fichiers construits par le build Node.js vers le serveur nginx
+COPY --from=build /frontend/dist /usr/share/nginx/html
+
+# Exposer le port pour le frontend
+EXPOSE 80

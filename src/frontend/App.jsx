@@ -17,8 +17,8 @@ function App() {
           <Route path="/Header" element={<Header />} />
           <Route path="/sidebar" element={<Sidebar />} />
           <Route path="/guestheader" element={<GuestHeader />} />
-          <Route path="/guesthome" element={<GuestHome />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<GuestHome />} />
         </Routes>
       </BrowserRouter>
     </>
