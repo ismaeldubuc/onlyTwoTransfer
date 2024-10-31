@@ -1,6 +1,8 @@
 services:
-  app:
-    build: .
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - '3000:3000'
     env_file:
@@ -10,7 +12,17 @@ services:
         condition: service_healthy
     volumes:
       - node_modules:/app/node_modules
-      - .:/app  # Pour s'assurer que le script wait-for-it.sh soit inclus
+      - .:/app
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - '8080:80'
+    depends_on:
+      backend:
+        condition: service_started
 
   mysql:
     image: mysql:latest

@@ -1,9 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import sequelize from './config/db.js';
-import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import fileRoutes from './routes/fileRoutes.js';
+import cors from 'cors';
 
 const app = express();
 
