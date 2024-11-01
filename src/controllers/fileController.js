@@ -38,17 +38,14 @@ export const generateShareLink = async (req, res) => {
         return res.status(404).json({ message: 'Fichier introuvable' });
       }
   
-      // Vérifier que l'utilisateur est propriétaire du fichier
       if (file.userId !== req.user.userId) {
         return res.status(403).json({ message: 'Accès non autorisé' });
       }
   
-      // Générer un jeton de partage unique
       const shareToken = uuidv4();
       const expirationDate = new Date();
       expirationDate.setHours(expirationDate.getHours() + expirationInHours);
   
-      // Mettre à jour le fichier avec le jeton et la date d'expiration
       file.shareToken = shareToken;
       file.expirationDate = expirationDate;
       await file.save();
@@ -61,27 +58,29 @@ export const generateShareLink = async (req, res) => {
     }
 };
 
-import mime from 'mime-types'; // Add this package to your dependencies if not already installed
-
 export const accessSharedFile = async (req, res) => {
+  const { shareToken } = req.params;
   try {
-    const { shareToken } = req.params;
-
     const file = await File.findOne({ where: { shareToken } });
-
     if (!file) {
-      return res.status(404).json({ message: 'Fichier non trouvé.' });
+      return res.status(404).json({ message: 'Lien de partage invalide ou fichier introuvable' });
     }
 
-    // Suppression des headers potentiellement problématiques
-    return res.send(file.data); // Envoyer les données binaires du fichier
+    if (new Date() > file.expirationDate) {
+      return res.status(410).json({ message: 'Le lien de partage a expiré' });
+    }
+
+    const filename = file.filename.includes('.') ? file.filename : `${file.filename}.${file.extension || 'bin'}`;
+
+    res.setHeader('Content-Type', file.mimeType || 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    res.send(file.data);
   } catch (error) {
     console.error('Erreur lors de l\'accès au fichier partagé :', error);
-    return res.status(500).json({ message: 'Erreur lors de l\'accès au fichier partagé.' });
+    res.status(500).json({ message: 'Erreur serveur', error: error.message });
   }
 };
-
-
 
 export const deleteFile = async (req, res) => {
     const { fileId } = req.params;
@@ -92,7 +91,6 @@ export const deleteFile = async (req, res) => {
         return res.status(404).json({ message: 'Fichier introuvable' });
       }
   
-      // Vérifier que l'utilisateur est propriétaire du fichier
       if (file.userId !== req.user.userId) {
         return res.status(403).json({ message: 'Accès non autorisé' });
       }

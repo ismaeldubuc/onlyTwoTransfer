@@ -7,17 +7,14 @@ import cors from 'cors';
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Routes (ajoutez vos routes ici)
 app.use('/api/files', fileRoutes);
-app.use(express.json()); // Pour analyser le corps des requêtes en JSON
-app.use('/api', userRoutes); // Monter les routes utilisateurs sous le préfixe /api
+app.use(express.json()); 
+app.use('/api', userRoutes); 
 
-// Vérification que l'application fonctionne
 app.get('/', (req, res) => {
     res.send('Bienvenue sur OnlyTwoTransfer!');
 });
