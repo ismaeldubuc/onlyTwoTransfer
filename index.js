@@ -5,7 +5,7 @@ import File from './src/models/File.js';
 
 const PORT = process.env.PORT || 3000;
 
-sequelize.sync({ force: true }) // En développement, force:true réinitialise les tables
+sequelize.sync({ force: true })
   .then(() => {
     console.log('Base de données synchronisée.');
   })

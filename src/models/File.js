@@ -13,7 +13,7 @@ const File = sequelize.define('File', {
     allowNull: false,
   },
   data: {
-    type: DataTypes.BLOB('long'), // Type BLOB pour les données binaires des fichiers
+    type: DataTypes.BLOB('long'),
     allowNull: false,
   },
   size: {
@@ -25,7 +25,7 @@ const File = sequelize.define('File', {
     allowNull: true,
   },
   shareToken: {
-    type: DataTypes.STRING, // Champ pour le jeton de partage
+    type: DataTypes.STRING, 
     allowNull: true,
     unique: true,
   },
