@@ -41,3 +41,8 @@ OnlyTwoTransfer est une plateforme de partage de fichiers permettant aux utilisa
    docker-compose up --build
    ```
 3. Le site sera ensuite disponible sur le localhost : [http://localhost:8080/](http://localhost:8080/)
+
+## Problème connue et piste d'amélioration
+
+1. Lorsque on importe un fichier qui n'a pas d'extension dans son nom (.zip, .png, etc...) le téléchargement de celui-ci ne fonctionne pas
+2. Nous n'avons pas eu le temps d'implémenter le crud permettant de supprimer un fichier dans notre interface, cependant la route le permettant existe et fonctionne
